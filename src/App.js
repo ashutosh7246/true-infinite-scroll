@@ -1,25 +1,51 @@
-import logo from './logo.svg';
-import './App.css';
+import { useEffect } from "react";
+import Scroll from "./components/Scroll";
+import Card from "./components/card/Card";
+import useScrollData from "./hooks/useScrollData";
+import "./index.css";
 
-function App() {
+const chunkSize = 10;
+const domPageSize = chunkSize * 2;
+
+export default function App() {
+  const { maxItemCount, list, hasMore, loading, page, fetchData } =
+    useScrollData(chunkSize);
+
+  useEffect(() => {
+    if (page === 0) {
+      fetchData(page + 1);
+      return;
+    }
+    if (page === 1 && hasMore) {
+      fetchData(page + 1);
+      return;
+    }
+  }, [page, hasMore]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Scroll
+      maxItemCount={maxItemCount}
+      list={list}
+      hasMore={hasMore}
+      loading={loading}
+      page={page}
+      fetchData={fetchData}
+      chunkSize={chunkSize}
+      domPageSize={domPageSize}
+      Card={Card}
+      height={"100vh"}
+      listElementHeight={100}
+      listGap={10}
+      LoadingList={LoadingList}
+      LoadingMore={LoadingMore}
+    />
   );
 }
 
-export default App;
+const LoadingList = () => {
+  return <>Loading...</>;
+};
+
+const LoadingMore = () => {
+  return <>Loading...</>;
+};

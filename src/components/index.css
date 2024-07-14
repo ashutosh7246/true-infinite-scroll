@@ -1,0 +1,43 @@
+.IS-list-parent {
+  height: 100%;
+  width: 100%;
+  overflow: scroll;
+  overscroll-behavior: none;
+}
+
+.IS-list {
+  overflow: scroll;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  padding-left: 10px;
+  padding-right: 10px;
+  overscroll-behavior: none;
+}
+
+.IS-list-item {
+  width: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+.loading {
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.w-100 {
+  width: 100%;
+}
+
+.h-100 {
+  height: 100%;
+}
+
+.h-auto {
+  height: auto;
+}
