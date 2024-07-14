@@ -3,13 +3,17 @@ import Scroll from "./components/Scroll";
 import Card from "./components/card/Card";
 import useScrollData from "./hooks/useScrollData";
 import "./index.css";
+import useProducts from "./hooks/useProducts";
 
 const chunkSize = 10;
 const domPageSize = chunkSize * 2;
 
 export default function App() {
   const { maxItemCount, list, hasMore, loading, page, fetchData } =
-    useScrollData(chunkSize);
+  useScrollData(chunkSize);
+
+  // const { maxItemCount, list, hasMore, loading, page, fetchData } =
+  //   useProducts(chunkSize);
 
   useEffect(() => {
     if (page === 0) {

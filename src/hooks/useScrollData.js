@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 var DBData = [];
 var ChunkedData = {};
@@ -54,30 +54,18 @@ function useScrollData(chunkSize) {
     if (loading) {
       return;
     }
-    setPage(page);
     setLoading(true);
-    // setTimeout(() => {
-    //   setLoading(false);
-    //   if (ChunkedData[page]) {
-    //     setList((lst) => [...lst, ...ChunkedData[page]]);
-    //   }
-    //   if (page >= totalPages) {
-    //     setMore(false);
-    //   }
-    // }, 10);
-    setLoading(false);
-    if (ChunkedData[page]) {
-      setList((lst) => [...lst, ...ChunkedData[page]]);
-    }
-    if (page >= totalPages) {
-      setMore(false);
-    }
+    setTimeout(() => {
+      setPage(page);
+      setLoading(false);
+      if (ChunkedData[page]) {
+        setList((lst) => [...lst, ...ChunkedData[page]]);
+      }
+      if (page >= totalPages) {
+        setMore(false);
+      }
+    }, 100);
   };
-
-  // useEffect(() => {
-  //   console.log(page);
-  //   fetchData(page);
-  // }, [page]);
 
   return {
     maxItemCount,

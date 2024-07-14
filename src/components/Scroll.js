@@ -140,6 +140,7 @@ export default function Scroll({
   const botSentCallback = (entry) => {
     if (
       currentIndex.current === maxItemCount - domPageSize ||
+      loading ||
       cssUpdating.current
     ) {
       return;
@@ -189,7 +190,7 @@ export default function Scroll({
           LoadingMore={LoadingMore}
         />
       ) : (
-        <div className="loading h-auto">
+        <div className="loading">
           <LoadingList />
         </div>
       )}

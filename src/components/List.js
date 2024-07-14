@@ -52,13 +52,13 @@ const List = ({
             </div>
           ))}
           {loading && listItems.length && (
-            <div className="loading h-auto">
+            <div className="loading">
               <LoadingList />
             </div>
           )}
         </div>
         {loading && !listItems.length && (
-          <div className="loading h-100">
+          <div className="loading">
             <LoadingMore />
           </div>
         )}
