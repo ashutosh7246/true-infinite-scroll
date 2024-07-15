@@ -9,10 +9,10 @@ const chunkSize = 10;
 const domPageSize = chunkSize * 2;
 
 export default function App() {
-  const { maxItemCount, list, hasMore, loading, page, fetchData } =
-  useScrollData(chunkSize);
+  const { maxItemCount, list, hasMore, loading, error, page, fetchData } =
+    useScrollData(chunkSize);
 
-  // const { maxItemCount, list, hasMore, loading, page, fetchData } =
+  // const { maxItemCount, list, hasMore, loading, error, page, fetchData } =
   //   useProducts(chunkSize);
 
   useEffect(() => {
@@ -32,6 +32,7 @@ export default function App() {
       list={list}
       hasMore={hasMore}
       loading={loading}
+      error={error}
       page={page}
       fetchData={fetchData}
       chunkSize={chunkSize}

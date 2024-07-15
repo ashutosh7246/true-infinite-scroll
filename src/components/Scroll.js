@@ -8,6 +8,7 @@ export default function Scroll({
   list,
   hasMore,
   loading,
+  error,
   page,
   fetchData,
   chunkSize,
@@ -26,6 +27,16 @@ export default function Scroll({
   const [listItems, setListItems] = useState([]);
   const cssUpdating = useRef(false);
   const initList = useRef(false);
+  const refApplied = useRef(false);
+  const [loadMoreDisabled, disableLoadMore] = useState(false);
+
+  useEffect(() => {
+    if (error) {
+      disableLoadMore(true);
+    } else {
+      disableLoadMore(false);
+    }
+  }, [error]);
 
   useEffect(() => {
     if (!list || !list.length || initList.current) {
@@ -54,11 +65,13 @@ export default function Scroll({
   };
 
   const applyRef = () => {
+    if (refApplied.current) return true;
     const listHeight = height.includes("vh")
       ? convertVhToPx(Number(height.replace("vh", "")))
       : Number(height.replace("px", ""));
     const elementsHeight = listItems.length * (listElementHeight + listGap);
     if (elementsHeight > listHeight + listElementHeight + listGap + 10) {
+      refApplied.current = true;
       return true;
     }
     return false;
@@ -304,6 +317,7 @@ Scroll.propTypes = {
   list: PropTypes.array.isRequired,
   hasMore: PropTypes.bool.isRequired,
   loading: PropTypes.bool.isRequired,
+  error: PropTypes.bool.isRequired,
   page: PropTypes.number.isRequired,
   fetchData: PropTypes.func.isRequired,
   chunkSize: PropTypes.number.isRequired,

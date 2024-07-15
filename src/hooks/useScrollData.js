@@ -9,6 +9,7 @@ function useScrollData(chunkSize) {
   const [page, setPage] = useState(0);
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
   const [hasMore, setMore] = useState(true);
 
   const _getCatImg = () => {
@@ -72,6 +73,7 @@ function useScrollData(chunkSize) {
     list,
     hasMore,
     loading,
+    error,
     page,
     fetchData,
   };
