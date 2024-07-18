@@ -4,11 +4,10 @@ import PropTypes from "prop-types";
 import "./index.css";
 
 export default function Scroll({
-  maxItemCount,
+  totalItems,
   list,
   hasMore,
   loading,
-  error,
   page,
   fetchData,
   chunkSize,
@@ -28,21 +27,13 @@ export default function Scroll({
   const cssUpdating = useRef(false);
   const initList = useRef(false);
   const refApplied = useRef(false);
-  const [loadMoreDisabled, disableLoadMore] = useState(false);
-
-  useEffect(() => {
-    if (error) {
-      disableLoadMore(true);
-    } else {
-      disableLoadMore(false);
-    }
-  }, [error]);
+  const prevPage = useRef(undefined);
 
   useEffect(() => {
     if (!list || !list.length || initList.current) {
       return;
     }
-    if (maxItemCount <= chunkSize * 2) {
+    if (totalItems <= chunkSize * 2) {
       setListItems(list);
       initList.current = true;
       return;
@@ -50,10 +41,10 @@ export default function Scroll({
     if (list.length < chunkSize * 2) return;
     setListItems(list);
     initList.current = true;
-  }, [list, chunkSize, maxItemCount]);
+  }, [list, chunkSize, totalItems]);
 
   const renderList = () => {
-    if (maxItemCount <= chunkSize * 2) {
+    if (totalItems <= chunkSize * 2) {
       return list.length ? true : false;
     }
     return list.length < chunkSize * 2 ? false : true;
@@ -152,7 +143,7 @@ export default function Scroll({
 
   const botSentCallback = (entry) => {
     if (
-      currentIndex.current === maxItemCount - domPageSize ||
+      currentIndex.current === totalItems - domPageSize ||
       loading ||
       cssUpdating.current
     ) {
@@ -166,7 +157,16 @@ export default function Scroll({
         adjustPaddings(true);
         recycleDOM(firstIndex);
       } else if (hasMore) {
+        // safe check
+        if (prevPage.current === page + 1) {
+          console.error(
+            "Observer disconnected due to too many calls with the same arguments"
+          );
+          prevPage.current = undefined;
+          return;
+        }
         fetchData(page + 1);
+        prevPage.current = page + 1;
       }
     }
   };
@@ -212,23 +212,23 @@ export default function Scroll({
 }
 
 Scroll.propTypes = {
-  maxItemCount: (props, propName, componentName) => {
+  totalItems: (props, propName, componentName) => {
     if (props[propName] < 0) {
       return new Error(`${propName} in ${componentName} should be >= 0.`);
     }
   },
   list: (props, propName, componentName) => {
-    const { maxItemCount, domPageSize } = props;
-    if (maxItemCount > domPageSize && props[propName].length !== domPageSize) {
+    const { totalItems, domPageSize } = props;
+    if (totalItems > domPageSize && props[propName].length !== domPageSize) {
       return new Error(
-        `${propName} length in ${componentName} should be equal to domPageSize when maxItemCount > domPageSize.`
+        `${propName} length in ${componentName} should be equal to domPageSize when totalItems > domPageSize.`
       );
     } else if (
-      maxItemCount <= domPageSize &&
+      totalItems <= domPageSize &&
       props[propName].length > domPageSize
     ) {
       return new Error(
-        `${propName} length in ${componentName} should be <= domPageSize when maxItemCount <= domPageSize.`
+        `${propName} length in ${componentName} should be <= domPageSize when totalItems <= domPageSize.`
       );
     }
   },
@@ -313,7 +313,7 @@ Scroll.propTypes = {
       );
     }
   },
-  maxItemCount: PropTypes.number.isRequired,
+  totalItems: PropTypes.number.isRequired,
   list: PropTypes.array.isRequired,
   hasMore: PropTypes.bool.isRequired,
   loading: PropTypes.bool.isRequired,

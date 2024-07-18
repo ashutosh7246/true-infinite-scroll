@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 var DBData = [];
 var ChunkedData = {};
 var totalPages = 0;
-var maxItemCount = 0;
+var totalItems = 0;
 
 function useScrollData(chunkSize) {
   const [page, setPage] = useState(0);
@@ -27,7 +27,7 @@ function useScrollData(chunkSize) {
       ++pg;
       ++totalPages;
     }
-    maxItemCount = totalPages * chunkSize;
+    totalItems = totalPages * chunkSize;
   }, [chunkSize]);
   const initDB = useCallback(() => {
     for (let i = 0; i < 420; i++) {
@@ -69,7 +69,7 @@ function useScrollData(chunkSize) {
   };
 
   return {
-    maxItemCount,
+    totalItems,
     list,
     hasMore,
     loading,

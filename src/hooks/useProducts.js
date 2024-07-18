@@ -6,7 +6,7 @@ function useProducts(chunkSize) {
   const [hasMore, setHasMore] = useState(true);
   const [error, setError] = useState(false);
   const [list, setList] = useState([]);
-  const [maxItemCount, setMaxItemCount] = useState(0);
+  const [totalItems, setMaxItemCount] = useState(0);
 
   const fetchData = (page) => {
     setLoading(true);
@@ -17,7 +17,7 @@ function useProducts(chunkSize) {
     )
       .then((res) => res.json())
       .then((res) => {
-        // if (page === 3) throw new Error("break it");
+        if (page === 5) throw new Error("break it");
         setList((lst) => [...lst, ...res.products]);
         if (list.length + res.products.length >= res.total) {
           setHasMore(false);
@@ -35,7 +35,7 @@ function useProducts(chunkSize) {
   };
 
   return {
-    maxItemCount,
+    totalItems,
     list,
     hasMore,
     loading,
