@@ -203,7 +203,7 @@ export default function Scroll({
           LoadingMore={LoadingMore}
         />
       ) : (
-        <div className="loading">
+        <div className="IS-loading IS-h-100">
           <LoadingList />
         </div>
       )}

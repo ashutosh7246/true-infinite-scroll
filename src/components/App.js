@@ -49,5 +49,5 @@ const LoadingList = () => {
 };
 
 const LoadingMore = () => {
-  return <div style={{ padding: 10 }}>Loading...</div>;
+  return <div style={{ padding: 10 }}>Loading More...</div>;
 };
