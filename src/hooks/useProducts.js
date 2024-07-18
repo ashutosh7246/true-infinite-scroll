@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 function useProducts(chunkSize) {
   const [page, setPage] = useState(0);
@@ -7,6 +7,8 @@ function useProducts(chunkSize) {
   const [error, setError] = useState(false);
   const [list, setList] = useState([]);
   const [totalItems, setMaxItemCount] = useState(0);
+
+  const counter = useRef(0);
 
   const fetchData = (page) => {
     setLoading(true);
@@ -17,7 +19,14 @@ function useProducts(chunkSize) {
     )
       .then((res) => res.json())
       .then((res) => {
-        if (page === 5) throw new Error("break it");
+        // ====================================================
+        // for testing purpose
+        if (page === 5 && counter.current < 5) {
+          counter.current++;
+          throw new Error("break it");
+        }
+        counter.current = 0;
+        // ====================================================
         setList((lst) => [...lst, ...res.products]);
         if (list.length + res.products.length >= res.total) {
           setHasMore(false);

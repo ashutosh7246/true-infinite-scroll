@@ -317,7 +317,6 @@ Scroll.propTypes = {
   list: PropTypes.array.isRequired,
   hasMore: PropTypes.bool.isRequired,
   loading: PropTypes.bool.isRequired,
-  error: PropTypes.bool.isRequired,
   page: PropTypes.number.isRequired,
   fetchData: PropTypes.func.isRequired,
   chunkSize: PropTypes.number.isRequired,

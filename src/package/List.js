@@ -57,13 +57,13 @@ const List = ({
             </div>
           ))}
           {loading && listItems.length && (
-            <div className="loading">
+            <div className="IS-loading IS-h-100">
               <LoadingList />
             </div>
           )}
         </div>
         {loading && !listItems.length && (
-          <div className="loading">
+          <div className="IS-loading IS-h-auto">
             <LoadingMore />
           </div>
         )}

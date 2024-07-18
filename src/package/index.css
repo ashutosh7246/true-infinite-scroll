@@ -10,8 +10,6 @@
   list-style-type: none;
   padding: 0;
   margin: 0;
-  padding-left: 10px;
-  padding-right: 10px;
   overscroll-behavior: none;
 }
 
@@ -23,10 +21,16 @@
   cursor: pointer;
 }
 
-.loading {
-  padding: 10px;
+.IS-loading {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.IS-h-100 {
   height: 100%;
+}
+
+.IS-h-auto {
+  height: auto;
 }
