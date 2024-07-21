@@ -5,22 +5,32 @@ import Card from "./card/Card";
 import useProducts from "../hooks/useProducts";
 
 const chunkSize = 10;
-const domPageSize = chunkSize * 2;
 
 export default function App() {
-  const { totalItems, list, hasMore, loading, page, fetchData } =
+  const { totalItems, list, hasMore, loading, nextPage, fetchData, reset } =
     useProducts(chunkSize);
 
+  // useEffect(() => {
+  //   if (nextPage === 0) {
+  //     fetchData(nextPage + 1);
+  //     return;
+  //   }
+  //   if (nextPage === 1 && hasMore) {
+  //     fetchData(nextPage + 1);
+  //     return;
+  //   }
+  // }, [nextPage, hasMore]);
+
   useEffect(() => {
-    if (page === 0) {
-      fetchData(page + 1);
-      return;
+    if (nextPage === 1) {
+      fetchData(nextPage);
     }
-    if (page === 1 && hasMore) {
-      fetchData(page + 1);
-      return;
-    }
-  }, [page, hasMore]);
+    return;
+  }, [nextPage]);
+
+  const onRefresh = () => {
+    reset();
+  };
 
   return (
     <div style={{ paddingLeft: 10, paddingRight: 10 }}>
@@ -29,16 +39,16 @@ export default function App() {
         list={list}
         hasMore={hasMore}
         loading={loading}
-        page={page}
+        nextPage={nextPage}
         fetchData={fetchData}
         chunkSize={chunkSize}
-        domPageSize={domPageSize}
         Card={Card}
         height={"100vh"}
         listElementHeight={100}
         listGap={10}
         LoadingList={LoadingList}
         LoadingMore={LoadingMore}
+        onRefresh={onRefresh}
       />
     </div>
   );

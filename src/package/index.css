@@ -34,3 +34,41 @@
 .IS-h-auto {
   height: auto;
 }
+
+.IS-top {
+  padding: 10px;
+  position: absolute;
+  bottom: 25px;
+  right: 25px;
+  background-color: white;
+  height: 50px;
+  width: 50px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+
+.IS-refresh {
+  position: absolute;
+  top: -100px;
+  height: 100px;
+  width: 100%;
+  transition: transform 0.3s ease;
+  left: 0;
+  will-change: transform;
+  justify-content: center;
+  align-items: center;
+  z-index: 99;
+}
+
+.IS-refresh-overlay {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  background-color: black;
+  z-index: 98;
+}

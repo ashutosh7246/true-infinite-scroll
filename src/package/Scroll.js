@@ -3,21 +3,23 @@ import List from "./List";
 import PropTypes from "prop-types";
 import "./index.css";
 
+const refreshThreshold = 100;
+
 export default function Scroll({
   totalItems,
   list,
   hasMore,
   loading,
-  page,
+  nextPage,
   fetchData,
   chunkSize,
-  domPageSize,
   Card,
   height,
   listElementHeight,
   listGap,
   LoadingList,
   LoadingMore,
+  onRefresh,
 }) {
   const currentIndex = useRef(0);
   const startElmObserver = useRef();
@@ -38,10 +40,14 @@ export default function Scroll({
       initList.current = true;
       return;
     }
+    if (hasMore && nextPage === 2) {
+      fetchData(nextPage);
+      return;
+    }
     if (list.length < chunkSize * 2) return;
     setListItems(list);
     initList.current = true;
-  }, [list, chunkSize, totalItems]);
+  }, [list, chunkSize, totalItems, hasMore, nextPage]);
 
   const renderList = () => {
     if (totalItems <= chunkSize * 2) {
@@ -79,6 +85,7 @@ export default function Scroll({
 
   const recycleDOM = (firstIndex) => {
     const items = [];
+    const domPageSize = chunkSize * 2;
     for (let i = 0; i < domPageSize; i++) {
       if (list[i + firstIndex]) {
         items.push(list[i + firstIndex]);
@@ -104,22 +111,24 @@ export default function Scroll({
 
     requestAnimationFrame(() => {
       const container = document.querySelector(".IS-list-parent");
-      const scrollPosition = container.scrollTop;
+      if (container) {
+        const scrollPosition = container.scrollTop;
 
-      ul.style.paddingTop = `${Math.max(newPadTop, 0)}px`;
+        ul.style.paddingTop = `${Math.max(newPadTop, 0)}px`;
 
-      if (!isScrollDown) {
-        container.scrollTop = scrollPosition - currentPadTop;
-      }
+        if (!isScrollDown) {
+          container.scrollTop = scrollPosition - currentPadTop;
+        }
 
-      ul.style.paddingBottom = `${Math.max(newPadBottom, 0)}px`;
-      if (!isScrollDown) {
-        container.scrollTop = container.scrollTop + remPaddingsVal;
-        setTimeout(() => {
+        ul.style.paddingBottom = `${Math.max(newPadBottom, 0)}px`;
+        if (!isScrollDown) {
+          container.scrollTop = container.scrollTop + remPaddingsVal;
+          setTimeout(() => {
+            cssUpdating.current = false;
+          }, 0);
+        } else {
           cssUpdating.current = false;
-        }, 0);
-      } else {
-        cssUpdating.current = false;
+        }
       }
     });
   };
@@ -129,7 +138,9 @@ export default function Scroll({
     if (currentIndex.current === 0) {
       requestAnimationFrame(() => {
         const container = document.querySelector(".IS-list");
-        container.style.paddingTop = "0px";
+        if (container && container.style) {
+          container.style.paddingTop = "0px";
+        }
       });
     }
 
@@ -142,6 +153,7 @@ export default function Scroll({
   };
 
   const botSentCallback = (entry) => {
+    const domPageSize = chunkSize * 2;
     if (
       currentIndex.current === totalItems - domPageSize ||
       loading ||
@@ -158,15 +170,15 @@ export default function Scroll({
         recycleDOM(firstIndex);
       } else if (hasMore) {
         // safe check
-        if (prevPage.current === page + 1) {
+        if (prevPage.current === nextPage) {
           console.error(
             "Observer disconnected due to too many calls with the same arguments"
           );
           prevPage.current = undefined;
           return;
         }
-        fetchData(page + 1);
-        prevPage.current = page + 1;
+        fetchData(nextPage);
+        prevPage.current = nextPage;
       }
     }
   };
@@ -187,8 +199,100 @@ export default function Scroll({
     if (node) lastElmObserver.current.observe(node);
   };
 
+  // ============================================================
+  const [pulling, setPulling] = useState(false);
+  const [pulledEnough, setPulledEnough] = useState(false);
+  const [translateY, setTranslateY] = useState(0);
+  const startY = useRef(0);
+  const currentY = useRef(0);
+
+  const isTop = () => {
+    const ul = document.querySelector(".IS-list");
+    if (ul) {
+      const currentPadTop = parseFloat(ul.style.paddingTop) || 0;
+      if (currentPadTop === 0 && currentIndex.current === 0) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  const isBottom = () => {
+    if (currentIndex.current !== 0) {
+      return true;
+    }
+    return false;
+  };
+
+  const handleTouchStart = (e) => {
+    if (!isTop()) return;
+    startY.current = e.touches[0].clientY;
+    currentY.current = startY.current;
+  };
+
+  const handleTouchMove = (e) => {
+    if (!isTop()) return;
+    currentY.current = e.touches[0].clientY;
+    const distance = Math.min(
+      currentY.current - startY.current,
+      refreshThreshold
+    );
+
+    if (distance > 0 && window.scrollY === 0) {
+      setPulling(true);
+      setTranslateY(distance);
+      if (distance >= refreshThreshold) {
+        setPulledEnough(true);
+      } else {
+        setPulledEnough(false);
+      }
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (!isTop()) return;
+    if (pulledEnough) {
+      onRefresh();
+      initList.current = false;
+      console.log("refreshed");
+    }
+    setPulling(false);
+    setPulledEnough(false);
+    setTranslateY(0);
+  };
+  // ============================================================
+
   return (
-    <div className="IS-list-container" style={{ height: height }}>
+    <div
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      className="IS-list-container"
+      style={{ height: height, position: "relative" }}
+    >
+      {/* pull to refresh card */}
+      <div
+        className="IS-refresh"
+        style={{
+          backgroundColor: pulledEnough ? "green" : "red",
+          transform: `translateY(${translateY}px)`,
+          display: pulling ? "flex" : "none",
+        }}
+      >
+        {pulledEnough ? "Release to refresh" : "Pull to refresh"}
+      </div>
+      {/* pull to refresh overlay */}
+      {pulling ? (
+        <div
+          style={{
+            opacity: Math.min(translateY / refreshThreshold, 0.5),
+          }}
+          className="IS-refresh-overlay"
+        ></div>
+      ) : null}
+      {/* got to top button, logic yet to be implemented */}
+      {renderList() && isBottom() ? <div className="IS-top">Top</div> : null}
+      {/* scrollable list, nee to disable scroll when pulling for refresh */}
       {renderList() ? (
         <List
           listItems={listItems}
@@ -218,30 +322,35 @@ Scroll.propTypes = {
     }
   },
   list: (props, propName, componentName) => {
-    const { totalItems, domPageSize } = props;
-    if (totalItems > domPageSize && props[propName].length !== domPageSize) {
+    const { totalItems, nextPage, chunkSize } = props;
+    const currentPage = nextPage - 1;
+    const maxCurrentItems = currentPage * chunkSize;
+    const listSize = props[propName].length;
+    if (listSize > totalItems) {
       return new Error(
-        `${propName} length in ${componentName} should be equal to domPageSize when totalItems > domPageSize.`
+        `${propName} length in ${componentName} should be <= ${totalItems}.`
       );
-    } else if (
-      totalItems <= domPageSize &&
-      props[propName].length > domPageSize
-    ) {
+    } else if (listSize > maxCurrentItems) {
       return new Error(
-        `${propName} length in ${componentName} should be <= domPageSize when totalItems <= domPageSize.`
+        `${propName} length in ${componentName} should be <= ${maxCurrentItems}.`
       );
     }
+    // if (totalItems > domPageSize && listSize !== domPageSize) {
+    //   return new Error(
+    //     `${propName} length in ${componentName} should be equal to domPageSize when totalItems > domPageSize.`
+    //   );
+    // } else if (
+    //   totalItems <= domPageSize &&
+    //   listSize > domPageSize
+    // ) {
+    //   return new Error(
+    //     `${propName} length in ${componentName} should be <= domPageSize when totalItems <= domPageSize.`
+    //   );
+    // }
   },
   chunkSize: (props, propName, componentName) => {
     if (props[propName] < 10) {
       return new Error(`${propName} in ${componentName} should be >= 10.`);
-    }
-  },
-  domPageSize: (props, propName, componentName) => {
-    if (props[propName] !== 2 * props.chunkSize) {
-      return new Error(
-        `${propName} in ${componentName} should be equal to 2 * chunkSize.`
-      );
     }
   },
   height: (props, propName, componentName) => {
@@ -313,14 +422,19 @@ Scroll.propTypes = {
       );
     }
   },
+  onRefresh: (props, propName, componentName) => {
+    const onRefresh = props[propName];
+    if (typeof onRefresh !== "function") {
+      return new Error(`${propName} in ${componentName} should be a function.`);
+    }
+  },
   totalItems: PropTypes.number.isRequired,
   list: PropTypes.array.isRequired,
   hasMore: PropTypes.bool.isRequired,
   loading: PropTypes.bool.isRequired,
-  page: PropTypes.number.isRequired,
+  nextPage: PropTypes.number.isRequired,
   fetchData: PropTypes.func.isRequired,
   chunkSize: PropTypes.number.isRequired,
-  domPageSize: PropTypes.number.isRequired,
   Card: PropTypes.elementType.isRequired,
   LoadingList: PropTypes.elementType.isRequired,
   LoadingMore: PropTypes.elementType.isRequired,

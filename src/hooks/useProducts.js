@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 
 function useProducts(chunkSize) {
-  const [page, setPage] = useState(0);
+  const [nextPage, setNextPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [error, setError] = useState(false);
@@ -10,22 +10,22 @@ function useProducts(chunkSize) {
 
   const counter = useRef(0);
 
-  const fetchData = (page) => {
+  const fetchData = (nextPage) => {
     setLoading(true);
     fetch(
       `https://dummyjson.com/products?limit=${chunkSize}&skip=${
-        (page - 1) * chunkSize
+        (nextPage - 1) * chunkSize
       }`
     )
       .then((res) => res.json())
       .then((res) => {
         // ====================================================
         // for testing purpose
-        if (page === 5 && counter.current < 5) {
-          counter.current++;
-          throw new Error("break it");
-        }
-        counter.current = 0;
+        // if (nextPage === 5 && counter.current < 5) {
+        //   counter.current++;
+        //   throw new Error("break it");
+        // }
+        // counter.current = 0;
         // ====================================================
         setList((lst) => [...lst, ...res.products]);
         if (list.length + res.products.length >= res.total) {
@@ -33,7 +33,8 @@ function useProducts(chunkSize) {
         }
         setError(false);
         setMaxItemCount(res.total);
-        setPage(res.skip / res.limit + 1);
+        const currentPage = res.skip / res.limit + 1;
+        setNextPage(currentPage + 1);
       })
       .catch((e) => {
         setError(true);
@@ -43,14 +44,24 @@ function useProducts(chunkSize) {
       });
   };
 
+  const reset = () => {
+    setHasMore(true);
+    setError(false);
+    setLoading(false);
+    setList([]);
+    setMaxItemCount(0);
+    setNextPage(1);
+  };
+
   return {
     totalItems,
     list,
     hasMore,
     loading,
     error,
-    page,
+    nextPage,
     fetchData,
+    reset,
   };
 }
 
