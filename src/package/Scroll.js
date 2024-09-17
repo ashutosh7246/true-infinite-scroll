@@ -3,7 +3,7 @@ import List from "./List";
 import PropTypes from "prop-types";
 import "./index.css";
 
-const refreshThreshold = 100;
+// const refreshThreshold = 100;
 
 export default function Scroll({
   totalItems,
@@ -19,7 +19,7 @@ export default function Scroll({
   listGap,
   LoadingList,
   LoadingMore,
-  onRefresh,
+  // onRefresh,
 }) {
   const currentIndex = useRef(0);
   const startElmObserver = useRef();
@@ -134,7 +134,7 @@ export default function Scroll({
   };
 
   const topSentCallback = (entry) => {
-    if (cssUpdating.current) return;
+    if (cssUpdating.current || goingToTop.current) return;
     if (currentIndex.current === 0) {
       requestAnimationFrame(() => {
         const container = document.querySelector(".IS-list");
@@ -157,7 +157,8 @@ export default function Scroll({
     if (
       currentIndex.current === totalItems - domPageSize ||
       loading ||
-      cssUpdating.current
+      cssUpdating.current ||
+      goingToTop.current
     ) {
       return;
     }
@@ -200,22 +201,23 @@ export default function Scroll({
   };
 
   // ============================================================
-  const [pulling, setPulling] = useState(false);
-  const [pulledEnough, setPulledEnough] = useState(false);
-  const [translateY, setTranslateY] = useState(0);
-  const startY = useRef(0);
-  const currentY = useRef(0);
+  // const [pulling, setPulling] = useState(false);
+  // const [pulledEnough, setPulledEnough] = useState(false);
+  // const [translateY, setTranslateY] = useState(0);
+  // const startY = useRef(0);
+  // const currentY = useRef(0);
+  const goingToTop = useRef(false);
 
-  const isTop = () => {
-    const ul = document.querySelector(".IS-list");
-    if (ul) {
-      const currentPadTop = parseFloat(ul.style.paddingTop) || 0;
-      if (currentPadTop === 0 && currentIndex.current === 0) {
-        return true;
-      }
-    }
-    return false;
-  };
+  // const isTop = () => {
+  //   const ul = document.querySelector(".IS-list");
+  //   if (ul) {
+  //     const currentPadTop = parseFloat(ul.style.paddingTop) || 0;
+  //     if (currentPadTop === 0 && currentIndex.current === 0) {
+  //       return true;
+  //     }
+  //   }
+  //   return false;
+  // };
 
   const isBottom = () => {
     if (currentIndex.current !== 0) {
@@ -224,54 +226,75 @@ export default function Scroll({
     return false;
   };
 
-  const handleTouchStart = (e) => {
-    if (!isTop()) return;
-    startY.current = e.touches[0].clientY;
-    currentY.current = startY.current;
-  };
+  // const handleTouchStart = (e) => {
+  //   if (!isTop()) return;
+  //   startY.current = e.touches[0].clientY;
+  //   currentY.current = startY.current;
+  // };
 
-  const handleTouchMove = (e) => {
-    if (!isTop()) return;
-    currentY.current = e.touches[0].clientY;
-    const distance = Math.min(
-      currentY.current - startY.current,
-      refreshThreshold
-    );
+  // const handleTouchMove = (e) => {
+  //   if (!isTop()) return;
+  //   currentY.current = e.touches[0].clientY;
+  //   const distance = Math.min(
+  //     currentY.current - startY.current,
+  //     refreshThreshold
+  //   );
 
-    if (distance > 0 && window.scrollY === 0) {
-      setPulling(true);
-      setTranslateY(distance);
-      if (distance >= refreshThreshold) {
-        setPulledEnough(true);
-      } else {
-        setPulledEnough(false);
+  //   if (distance > 0 && window.scrollY === 0) {
+  //     setPulling(true);
+  //     setTranslateY(distance);
+  //     if (distance >= refreshThreshold) {
+  //       setPulledEnough(true);
+  //     } else {
+  //       setPulledEnough(false);
+  //     }
+  //   }
+  // };
+
+  // const handleTouchEnd = () => {
+  //   if (!isTop()) return;
+  //   if (pulledEnough) {
+  //     onRefresh();
+  //     initList.current = false;
+  //     console.log("refreshed");
+  //   }
+  //   setPulling(false);
+  //   setPulledEnough(false);
+  //   setTranslateY(0);
+  // };
+
+  const goToTop = () => {
+    // need to disable scroll when going to top
+    goingToTop.current = true;
+    const ul = document.querySelector(".IS-list");
+    ul.style.paddingTop = `0px`;
+    ul.style.paddingBottom = `0px`;
+    document.querySelector(".IS-list-parent").scrollTop = "0px";
+    const items = [];
+    const domPageSize = chunkSize * 2;
+    for (let i = 0; i < domPageSize; i++) {
+      if (list[i]) {
+        items.push(list[i]);
       }
     }
-  };
-
-  const handleTouchEnd = () => {
-    if (!isTop()) return;
-    if (pulledEnough) {
-      onRefresh();
-      initList.current = false;
-      console.log("refreshed");
-    }
-    setPulling(false);
-    setPulledEnough(false);
-    setTranslateY(0);
+    requestAnimationFrame(() => {
+      setListItems([...items]);
+    });
+    currentIndex.current = 0;
+    goingToTop.current = false;
   };
   // ============================================================
 
   return (
     <div
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
+      // onTouchStart={handleTouchStart}
+      // onTouchMove={handleTouchMove}
+      // onTouchEnd={handleTouchEnd}
       className="IS-list-container"
       style={{ height: height, position: "relative" }}
     >
       {/* pull to refresh card */}
-      <div
+      {/* <div
         className="IS-refresh"
         style={{
           backgroundColor: pulledEnough ? "green" : "red",
@@ -279,20 +302,33 @@ export default function Scroll({
           display: pulling ? "flex" : "none",
         }}
       >
+        <div
+          style={{
+            display: "inline-block",
+            transform: `rotate(${(translateY / refreshThreshold) * 180}deg)`,
+            transition: "transform 0.3s ease",
+          }}
+        >
+          🔄
+        </div>
         {pulledEnough ? "Release to refresh" : "Pull to refresh"}
-      </div>
+      </div> */}
       {/* pull to refresh overlay */}
-      {pulling ? (
+      {/* {pulling ? (
         <div
           style={{
             opacity: Math.min(translateY / refreshThreshold, 0.5),
           }}
           className="IS-refresh-overlay"
         ></div>
+      ) : null} */}
+      {/* got to top button */}
+      {renderList() && isBottom() ? (
+        <div onClick={goToTop} className="IS-top">
+          Top
+        </div>
       ) : null}
-      {/* got to top button, logic yet to be implemented */}
-      {renderList() && isBottom() ? <div className="IS-top">Top</div> : null}
-      {/* scrollable list, nee to disable scroll when pulling for refresh */}
+      {/* scrollable list, need to disable scroll when pulling for refresh */}
       {renderList() ? (
         <List
           listItems={listItems}
@@ -335,18 +371,6 @@ Scroll.propTypes = {
         `${propName} length in ${componentName} should be <= ${maxCurrentItems}.`
       );
     }
-    // if (totalItems > domPageSize && listSize !== domPageSize) {
-    //   return new Error(
-    //     `${propName} length in ${componentName} should be equal to domPageSize when totalItems > domPageSize.`
-    //   );
-    // } else if (
-    //   totalItems <= domPageSize &&
-    //   listSize > domPageSize
-    // ) {
-    //   return new Error(
-    //     `${propName} length in ${componentName} should be <= domPageSize when totalItems <= domPageSize.`
-    //   );
-    // }
   },
   chunkSize: (props, propName, componentName) => {
     if (props[propName] < 10) {
@@ -422,12 +446,12 @@ Scroll.propTypes = {
       );
     }
   },
-  onRefresh: (props, propName, componentName) => {
-    const onRefresh = props[propName];
-    if (typeof onRefresh !== "function") {
-      return new Error(`${propName} in ${componentName} should be a function.`);
-    }
-  },
+  // onRefresh: (props, propName, componentName) => {
+  //   const onRefresh = props[propName];
+  //   if (typeof onRefresh !== "function") {
+  //     return new Error(`${propName} in ${componentName} should be a function.`);
+  //   }
+  // },
   totalItems: PropTypes.number.isRequired,
   list: PropTypes.array.isRequired,
   hasMore: PropTypes.bool.isRequired,

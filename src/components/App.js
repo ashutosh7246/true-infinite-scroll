@@ -28,9 +28,9 @@ export default function App() {
     return;
   }, [nextPage]);
 
-  const onRefresh = () => {
-    reset();
-  };
+  // const onRefresh = () => {
+  //   reset();
+  // };
 
   return (
     <div style={{ paddingLeft: 10, paddingRight: 10 }}>
@@ -48,7 +48,7 @@ export default function App() {
         listGap={10}
         LoadingList={LoadingList}
         LoadingMore={LoadingMore}
-        onRefresh={onRefresh}
+        // onRefresh={onRefresh}
       />
     </div>
   );

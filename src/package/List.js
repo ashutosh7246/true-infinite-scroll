@@ -15,13 +15,6 @@ const List = ({
 }) => {
   const getRef = useCallback(
     (index) => {
-      // return listItems.length >= 20
-      //   ? index === 0
-      //     ? startElmRef
-      //     : index === listItems.length - 1
-      //     ? lastElmRef
-      //     : undefined
-      //   : undefined;
       return index === 0
         ? startElmRef
         : index === listItems.length - 1
