@@ -72,3 +72,7 @@
   background-color: black;
   z-index: 98;
 }
+
+.disable-touch {
+  pointer-events: none;
+}

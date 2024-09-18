@@ -3,8 +3,6 @@ import List from "./List";
 import PropTypes from "prop-types";
 import "./index.css";
 
-// const refreshThreshold = 100;
-
 export default function Scroll({
   totalItems,
   list,
@@ -19,7 +17,6 @@ export default function Scroll({
   listGap,
   LoadingList,
   LoadingMore,
-  // onRefresh,
 }) {
   const currentIndex = useRef(0);
   const startElmObserver = useRef();
@@ -61,6 +58,12 @@ export default function Scroll({
     return (vh * viewportHeight) / 100;
   };
 
+  function isMobileBrowser() {
+    return /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent
+    );
+  }
+
   const applyRef = () => {
     if (refApplied.current) return true;
     const listHeight = height.includes("vh")
@@ -101,6 +104,14 @@ export default function Scroll({
       return;
     }
     cssUpdating.current = true;
+    if (!isScrollDown && isMobileBrowser()) {
+      // ===============================this code cut off user touch from the screen for mobile devices=============================== //
+      document.querySelector(".IS-list-parent").style.display = "none";
+      setTimeout(() => {
+        document.querySelector(".IS-list-parent").style.display = "block";
+      }, 0);
+      // ===============================this code cut off user touch from the screen for mobile devices=============================== //
+    }
     const ul = document.querySelector(".IS-list");
     const currentPadTop = parseFloat(ul.style.paddingTop) || 0;
     const currentPadBottom = parseFloat(ul.style.paddingBottom) || 0;
@@ -120,7 +131,6 @@ export default function Scroll({
           container.scrollTop = scrollPosition - currentPadTop;
         }
 
-        ul.style.paddingBottom = `${Math.max(newPadBottom, 0)}px`;
         if (!isScrollDown) {
           container.scrollTop = container.scrollTop + remPaddingsVal;
           setTimeout(() => {
@@ -200,71 +210,17 @@ export default function Scroll({
     if (node) lastElmObserver.current.observe(node);
   };
 
-  // ============================================================
-  // const [pulling, setPulling] = useState(false);
-  // const [pulledEnough, setPulledEnough] = useState(false);
-  // const [translateY, setTranslateY] = useState(0);
-  // const startY = useRef(0);
-  // const currentY = useRef(0);
+  // =====================================go to top===================================== //
   const goingToTop = useRef(false);
-
-  // const isTop = () => {
-  //   const ul = document.querySelector(".IS-list");
-  //   if (ul) {
-  //     const currentPadTop = parseFloat(ul.style.paddingTop) || 0;
-  //     if (currentPadTop === 0 && currentIndex.current === 0) {
-  //       return true;
-  //     }
-  //   }
-  //   return false;
-  // };
-
   const isBottom = () => {
     if (currentIndex.current !== 0) {
       return true;
     }
     return false;
   };
-
-  // const handleTouchStart = (e) => {
-  //   if (!isTop()) return;
-  //   startY.current = e.touches[0].clientY;
-  //   currentY.current = startY.current;
-  // };
-
-  // const handleTouchMove = (e) => {
-  //   if (!isTop()) return;
-  //   currentY.current = e.touches[0].clientY;
-  //   const distance = Math.min(
-  //     currentY.current - startY.current,
-  //     refreshThreshold
-  //   );
-
-  //   if (distance > 0 && window.scrollY === 0) {
-  //     setPulling(true);
-  //     setTranslateY(distance);
-  //     if (distance >= refreshThreshold) {
-  //       setPulledEnough(true);
-  //     } else {
-  //       setPulledEnough(false);
-  //     }
-  //   }
-  // };
-
-  // const handleTouchEnd = () => {
-  //   if (!isTop()) return;
-  //   if (pulledEnough) {
-  //     onRefresh();
-  //     initList.current = false;
-  //     console.log("refreshed");
-  //   }
-  //   setPulling(false);
-  //   setPulledEnough(false);
-  //   setTranslateY(0);
-  // };
-
   const goToTop = () => {
-    // need to disable scroll when going to top
+    // disable scroll when going to top
+    document.body.classList.add("disable-touch");
     goingToTop.current = true;
     const ul = document.querySelector(".IS-list");
     ul.style.paddingTop = `0px`;
@@ -282,53 +238,20 @@ export default function Scroll({
     });
     currentIndex.current = 0;
     goingToTop.current = false;
+    document.body.classList.remove("disable-touch");
   };
-  // ============================================================
+  // =====================================go to top===================================== //
 
   return (
     <div
-      // onTouchStart={handleTouchStart}
-      // onTouchMove={handleTouchMove}
-      // onTouchEnd={handleTouchEnd}
       className="IS-list-container"
       style={{ height: height, position: "relative" }}
     >
-      {/* pull to refresh card */}
-      {/* <div
-        className="IS-refresh"
-        style={{
-          backgroundColor: pulledEnough ? "green" : "red",
-          transform: `translateY(${translateY}px)`,
-          display: pulling ? "flex" : "none",
-        }}
-      >
-        <div
-          style={{
-            display: "inline-block",
-            transform: `rotate(${(translateY / refreshThreshold) * 180}deg)`,
-            transition: "transform 0.3s ease",
-          }}
-        >
-          🔄
-        </div>
-        {pulledEnough ? "Release to refresh" : "Pull to refresh"}
-      </div> */}
-      {/* pull to refresh overlay */}
-      {/* {pulling ? (
-        <div
-          style={{
-            opacity: Math.min(translateY / refreshThreshold, 0.5),
-          }}
-          className="IS-refresh-overlay"
-        ></div>
-      ) : null} */}
-      {/* got to top button */}
       {renderList() && isBottom() ? (
         <div onClick={goToTop} className="IS-top">
           Top
         </div>
       ) : null}
-      {/* scrollable list, need to disable scroll when pulling for refresh */}
       {renderList() ? (
         <List
           listItems={listItems}
@@ -446,12 +369,6 @@ Scroll.propTypes = {
       );
     }
   },
-  // onRefresh: (props, propName, componentName) => {
-  //   const onRefresh = props[propName];
-  //   if (typeof onRefresh !== "function") {
-  //     return new Error(`${propName} in ${componentName} should be a function.`);
-  //   }
-  // },
   totalItems: PropTypes.number.isRequired,
   list: PropTypes.array.isRequired,
   hasMore: PropTypes.bool.isRequired,
