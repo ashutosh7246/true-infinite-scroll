@@ -210,6 +210,31 @@ export default function Scroll({
     if (node) lastElmObserver.current.observe(node);
   };
 
+  // const isTouching = useRef(false);
+  // useEffect(() => {
+  //   const handleTouchStart = () => {
+  //     isTouching.current = true;
+  //   };
+
+  //   const handleTouchEnd = () => {
+  //     isTouching.current = false;
+  //   };
+
+  //   const handleTouchCancel = () => {
+  //     isTouching.current = false;
+  //   };
+
+  //   window.addEventListener("touchstart", handleTouchStart);
+  //   window.addEventListener("touchend", handleTouchEnd);
+  //   window.addEventListener("touchcancel", handleTouchCancel);
+
+  //   return () => {
+  //     window.removeEventListener("touchstart", handleTouchStart);
+  //     window.removeEventListener("touchend", handleTouchEnd);
+  //     window.removeEventListener("touchcancel", handleTouchCancel);
+  //   };
+  // }, [listItems]);
+
   // =====================================go to top===================================== //
   const goingToTop = useRef(false);
   const isBottom = () => {
