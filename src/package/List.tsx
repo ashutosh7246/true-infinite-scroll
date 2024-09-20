@@ -1,7 +1,21 @@
 import React, { useCallback, useMemo } from "react";
+import { MutableRefObject } from "react";
 import "./index.css";
 
-const List = ({
+interface ListProps {
+  listItems: Array<{ [key: string]: any }>; // Array of objects representing the list
+  loading: boolean; // Indicator if data is being loaded
+  Card: React.ComponentType<{ item: any }>; // Card component, rendering individual items
+  listElementHeight: number; // Height of each list element
+  listGap: number; // Gap between list elements
+  LoadingList: React.ComponentType; // Component to display while loading the list
+  LoadingMore: React.ComponentType; // Component to display while loading more items
+  startElmRef: any; // Reference to the starting element
+  lastElmRef: any; // Reference to the last element
+  listRef: MutableRefObject<HTMLDivElement | null>; // Reference to the container element holding the list
+}
+
+const List: React.FC<ListProps> = ({
   listItems = [],
   startElmRef,
   lastElmRef,
@@ -14,7 +28,7 @@ const List = ({
   LoadingMore,
 }) => {
   const getRef = useCallback(
-    (index) => {
+    (index: number) => {
       return index === 0
         ? startElmRef
         : index === listItems.length - 1
@@ -25,7 +39,7 @@ const List = ({
   );
 
   const isLast = useCallback(
-    (index) => {
+    (index: number) => {
       return index === listItems.length - 1;
     },
     [listItems]

@@ -1,14 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 
-const DB = [];
-const chunks = [];
+// const DB = [];
+// const chunks = [];
 
-function useProducts(chunkSize) {
+interface DataObject {
+  [key: string]: any; // Define specific properties as needed
+}
+
+function useProducts(chunkSize: number) {
   const [nextPage, setNextPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [error, setError] = useState(false);
-  const [list, setList] = useState([]);
+  const [list, setList] = useState<Array<DataObject>>([]);
   const [totalItems, setMaxItemCount] = useState(0);
 
   // const counter = useRef(0);
@@ -22,7 +26,7 @@ function useProducts(chunkSize) {
   //   }
   // }, []);
 
-  const fetchData = (nextPage) => {
+  const fetchData = (nextPage: number) => {
     // setList((lst) => [...lst, ...chunks[nextPage - 1]]);
     // if (list.length + chunks[nextPage - 1].length >= 194) {
     //   setHasMore(false);

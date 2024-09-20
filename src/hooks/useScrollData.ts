@@ -1,13 +1,22 @@
 import { useCallback, useEffect, useState } from "react";
 
-var DBData = [];
-var ChunkedData = {};
+interface DataObject {
+  [key: string]: any; // Define specific properties as needed
+}
+
+interface ChunkedData {
+  [key: number]: DataObject[]; // Key as number, value as an object
+}
+
+const DBData: DataObject[] = []; // Array of objects
+const ChunkedData: ChunkedData = {}; // Object with number keys and object values
+
 var totalPages = 0;
 var totalItems = 0;
 
-function useScrollData(chunkSize) {
+function useScrollData(chunkSize: number) {
   const [page, setPage] = useState(0);
-  const [list, setList] = useState([]);
+  const [list, setList] = useState<Array<DataObject>>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [hasMore, setMore] = useState(true);
@@ -45,7 +54,7 @@ function useScrollData(chunkSize) {
     initDB();
   }, [initDB]);
 
-  const fetchData = (page) => {
+  const fetchData = (page: number) => {
     if (page < 1) {
       return;
     }
