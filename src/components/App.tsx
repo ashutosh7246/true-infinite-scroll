@@ -38,10 +38,62 @@ export default function App() {
         listGap={10}
         LoadingList={LoadingList}
         LoadingMore={LoadingMore}
+        goToTop={{
+          showGoToTop: true,
+          GoToTopButton: GoToTopButton,
+          goToTopStyle: {
+            boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
+            borderRadius: "50%",
+          },
+        }}
+        refreshList={{
+          onRefresh: reset,
+          showRefresh: true,
+          refreshButtonStyle: {
+            boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
+            borderRadius: "5px",
+          },
+          RefreshButton: RefreshButton,
+        }}
       />
     </div>
   );
 }
+
+const RefreshButton = () => {
+  return (
+    <div
+      style={{
+        backgroundColor: "white",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        borderRadius: "5px",
+        padding: "10px",
+      }}
+    >
+      Refresh
+    </div>
+  );
+};
+
+const GoToTopButton = () => {
+  return (
+    <div
+      style={{
+        height: 50,
+        width: 50,
+        backgroundColor: "white",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        borderRadius: "50%",
+      }}
+    >
+      Top
+    </div>
+  );
+};
 
 const LoadingList = () => {
   return <div style={{ padding: 10 }}>Loading...</div>;

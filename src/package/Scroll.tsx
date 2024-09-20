@@ -1,22 +1,77 @@
 import React, { useEffect, useRef, useState } from "react";
 import List from "./List";
-import PropTypes from "prop-types";
 import "./index.css";
 
+interface CommonButtonStyle {
+  /** Border radius of the button */
+  borderRadius?: string;
+  /** Box shadow of the button */
+  boxShadow?: string;
+}
+
+interface GoToTop {
+  /** Flag to show the Go To Top button */
+  showGoToTop?: boolean;
+  /** Component for Go To Top button */
+  GoToTopButton?: React.ComponentType;
+  /** Style properties for the Go to Top button */
+  goToTopStyle?: CommonButtonStyle;
+}
+
+interface RefreshButton {
+  /** Component for Refresh button */
+  RefreshButton?: React.ComponentType;
+  /** Style properties for the Go to Top button */
+  refreshButtonStyle?: CommonButtonStyle;
+}
+
+interface RefreshPresent extends RefreshButton {
+  /** Flag to show the Refresh button */
+  showRefresh?: true;
+  /** Function to reset data */
+  onRefresh: () => void;
+}
+
+interface RefreshNotPresent extends RefreshButton {
+  /** Flag to show the Refresh button */
+  showRefresh?: false;
+  /** Function to reset data */
+  onRefresh?: () => void;
+}
+
+type ListRefreshProps = RefreshPresent | RefreshNotPresent;
+
 interface InfiniteScrollProps {
-  totalItems: number; // Total number of items available
-  list: Array<{ [key: string]: any }>; // Array of objects representing the list
-  hasMore: boolean; // Indicator if more items can be loaded
-  loading: boolean; // Indicator if data is being loaded
-  nextPage: number; // The next page number to be fetched
-  fetchData: (page: number) => void; // Function to fetch data, accepts a page number
-  chunkSize: number; // Number of items to load per fetch
-  Card: React.ComponentType<{ item: any }>; // Card component, rendering individual items
-  height: number; // The height of the container
-  listElementHeight: number; // Height of each list element
-  listGap: number; // Gap between list elements
-  LoadingList: React.ComponentType; // Component to display while loading the list
-  LoadingMore: React.ComponentType; // Component to display while loading more items
+  /** Total number of items available, must be at least 1 */
+  totalItems: number; // totalItems >= 1
+  /** Array of objects representing the list, must have size <= totalItems */
+  list: Array<{ [key: string]: any }>; // listSize <= totalItems
+  /** Indicator if more items can be loaded */
+  hasMore: boolean;
+  /** Indicator if data is being loaded */
+  loading: boolean;
+  /** The next page number to be fetched */
+  nextPage: number; // listSize <= currentPage * chunkSize
+  /** Function to fetch data, accepts a page number */
+  fetchData: (page: number) => void;
+  /** Number of items to load per fetch, must be at least 10 */
+  chunkSize: number; // chunkSize >= 10
+  /** Card component, rendering individual items */
+  Card: React.ComponentType<{ item: any }>;
+  /** The height of the container, must be at least 200 */
+  height: number; // height >= 200
+  /** Height of each list element, must be at least 10 */
+  listElementHeight: number; // listElementHeight >= 10
+  /** Gap between list elements, must be at least 1 */
+  listGap: number; // listGap >= 1
+  /** Component to display while loading the list */
+  LoadingList?: React.ComponentType;
+  /** Component to display while loading more items */
+  LoadingMore?: React.ComponentType;
+  /** Properties to show the Go To Top button */
+  goToTop: GoToTop;
+  /** Properties to show the Refresh button */
+  refreshList: ListRefreshProps;
 }
 
 const Scroll: React.FC<InfiniteScrollProps> = ({
@@ -33,7 +88,12 @@ const Scroll: React.FC<InfiniteScrollProps> = ({
   listGap,
   LoadingList,
   LoadingMore,
+  goToTop,
+  refreshList,
 }) => {
+  const { showGoToTop, GoToTopButton, goToTopStyle } = goToTop;
+  const { showRefresh, onRefresh, RefreshButton, refreshButtonStyle } =
+    refreshList;
   const currentIndex = useRef<number>(0);
   const startElmObserver = useRef<IntersectionObserver | null>(null);
   const lastElmObserver = useRef<IntersectionObserver | null>(null);
@@ -43,6 +103,7 @@ const Scroll: React.FC<InfiniteScrollProps> = ({
   const initList = useRef<boolean>(false);
   const refApplied = useRef<boolean>(false);
   const prevPage = useRef<number | undefined>(undefined);
+  const goingToTop = useRef<boolean>(false);
 
   useEffect(() => {
     if (!list || !list.length || initList.current) {
@@ -266,15 +327,14 @@ const Scroll: React.FC<InfiniteScrollProps> = ({
   //   };
   // }, [listItems]);
 
-  // =====================================go to top===================================== //
-  const goingToTop = useRef(false);
   const isBottom = () => {
     if (currentIndex.current !== 0) {
       return true;
     }
     return false;
   };
-  const goToTop = () => {
+
+  const scrollToTop = () => {
     // disable scroll when going to top
     document.body.classList.add("disable-touch");
     goingToTop.current = true;
@@ -299,22 +359,86 @@ const Scroll: React.FC<InfiniteScrollProps> = ({
         setListItems([...items]);
       });
       currentIndex.current = 0;
-      goingToTop.current = false;
     }
+    goingToTop.current = false;
     document.body.classList.remove("disable-touch");
   };
-  // =====================================go to top===================================== //
+
+  const renderScrollTopView = () => {
+    return (
+      <>
+        {renderList() && isBottom() && showGoToTop ? (
+          <>
+            {GoToTopButton ? (
+              <div
+                onClick={scrollToTop}
+                className="IS-top-custom"
+                style={{
+                  borderRadius: goToTopStyle?.borderRadius ?? "none",
+                  boxShadow: goToTopStyle?.boxShadow ?? "none",
+                }}
+              >
+                <GoToTopButton />
+              </div>
+            ) : (
+              <div onClick={scrollToTop} className="IS-top">
+                Top
+              </div>
+            )}
+          </>
+        ) : null}
+      </>
+    );
+  };
+
+  const renderRefreshList = () => {
+    const refreshState = () => {
+      if (!onRefresh) return;
+      currentIndex.current = 0;
+      startElmObserver.current = null;
+      lastElmObserver.current = null;
+      listRef.current = null;
+      setListItems([]);
+      cssUpdating.current = false;
+      initList.current = false;
+      refApplied.current = false;
+      prevPage.current = undefined;
+      goingToTop.current = false;
+      onRefresh();
+    };
+    return (
+      <>
+        {renderList() && showRefresh && currentIndex.current === 0 ? (
+          <>
+            {RefreshButton ? (
+              <div
+                onClick={refreshState}
+                className="IS-refresh-button-custom"
+                style={{
+                  borderRadius: refreshButtonStyle?.borderRadius ?? "none",
+                  boxShadow: refreshButtonStyle?.boxShadow ?? "none",
+                }}
+              >
+                <RefreshButton />
+              </div>
+            ) : (
+              <div onClick={refreshState} className="IS-refresh-button">
+                Refresh
+              </div>
+            )}
+          </>
+        ) : null}
+      </>
+    );
+  };
 
   return (
     <div
       className="IS-list-container"
       style={{ height: height, position: "relative" }}
     >
-      {renderList() && isBottom() ? (
-        <div onClick={goToTop} className="IS-top">
-          Top
-        </div>
-      ) : null}
+      {renderRefreshList()}
+      {renderScrollTopView()}
       {renderList() ? (
         <List
           listItems={listItems}
@@ -330,121 +454,11 @@ const Scroll: React.FC<InfiniteScrollProps> = ({
         />
       ) : (
         <div className="IS-loading IS-h-100">
-          <LoadingList />
+          {LoadingList ? <LoadingList /> : <div>Loading...</div>}
         </div>
       )}
     </div>
   );
 };
-
-// Scroll.propTypes = {
-//   totalItems: (props, propName, componentName) => {
-//     if (props[propName] < 0) {
-//       return new Error(`${propName} in ${componentName} should be >= 0.`);
-//     }
-//   },
-//   list: (props, propName, componentName) => {
-//     const { totalItems, nextPage, chunkSize } = props;
-//     const currentPage = nextPage - 1;
-//     const maxCurrentItems = currentPage * chunkSize;
-//     const listSize = props[propName].length;
-//     if (listSize > totalItems) {
-//       return new Error(
-//         `${propName} length in ${componentName} should be <= ${totalItems}.`
-//       );
-//     } else if (listSize > maxCurrentItems) {
-//       return new Error(
-//         `${propName} length in ${componentName} should be <= ${maxCurrentItems}.`
-//       );
-//     }
-//   },
-//   chunkSize: (props, propName, componentName) => {
-//     if (props[propName] < 10) {
-//       return new Error(`${propName} in ${componentName} should be >= 10.`);
-//     }
-//   },
-//   height: (props, propName, componentName) => {
-//     const validHeight = /^(?:\d+px|\d+vh)$/;
-//     if (!validHeight.test(props[propName])) {
-//       return new Error(
-//         `${propName} in ${componentName} should be a valid CSS height in px or vh.`
-//       );
-//     }
-//   },
-//   Card: (props, propName, componentName) => {
-//     const card = props[propName];
-//     if (
-//       !React.isValidElement(<card />) &&
-//       (typeof card !== "function" ||
-//         typeof card.prototype.render !== "function")
-//     ) {
-//       return new Error(
-//         `${propName} in ${componentName} should be a valid React component.`
-//       );
-//     }
-//   },
-//   fetchData: (props, propName, componentName) => {
-//     const fetchData = props[propName];
-//     if (typeof fetchData !== "function") {
-//       return new Error(`${propName} in ${componentName} should be a function.`);
-//     }
-//     if (fetchData.length !== 1) {
-//       return new Error(
-//         `${propName} in ${componentName} should be a function that takes a single argument.`
-//       );
-//     }
-//   },
-//   listElementHeight: (props, propName, componentName) => {
-//     if (typeof props[propName] !== "number" || props[propName] < 1) {
-//       return new Error(
-//         `${propName} in ${componentName} should be a number and >= 1.`
-//       );
-//     }
-//   },
-//   listGap: (props, propName, componentName) => {
-//     if (typeof props[propName] !== "number" || props[propName] < 1) {
-//       return new Error(
-//         `${propName} in ${componentName} should be a number and >= 1.`
-//       );
-//     }
-//   },
-//   LoadingList: (props, propName, componentName) => {
-//     const loadingList = props[propName];
-//     if (
-//       !React.isValidElement(<loadingList />) &&
-//       (typeof loadingList !== "function" ||
-//         typeof loadingList.prototype.render !== "function")
-//     ) {
-//       return new Error(
-//         `${propName} in ${componentName} should be a valid React component.`
-//       );
-//     }
-//   },
-//   LoadingMore: (props, propName, componentName) => {
-//     const loadingMore = props[propName];
-//     if (
-//       !React.isValidElement(<loadingMore />) &&
-//       (typeof loadingMore !== "function" ||
-//         typeof loadingMore.prototype.render !== "function")
-//     ) {
-//       return new Error(
-//         `${propName} in ${componentName} should be a valid React component.`
-//       );
-//     }
-//   },
-//   totalItems: PropTypes.number.isRequired,
-//   list: PropTypes.array.isRequired,
-//   hasMore: PropTypes.bool.isRequired,
-//   loading: PropTypes.bool.isRequired,
-//   nextPage: PropTypes.number.isRequired,
-//   fetchData: PropTypes.func.isRequired,
-//   chunkSize: PropTypes.number.isRequired,
-//   Card: PropTypes.elementType.isRequired,
-//   LoadingList: PropTypes.elementType.isRequired,
-//   LoadingMore: PropTypes.elementType.isRequired,
-//   height: PropTypes.string.isRequired,
-//   listElementHeight: PropTypes.number.isRequired,
-//   listGap: PropTypes.number.isRequired,
-// };
 
 export default Scroll;
