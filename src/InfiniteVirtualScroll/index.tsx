@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { InfiniteScrollProps } from "./types";
-import Scroll from "../Scroll";
+import Scroll from "./Scroll";
 import useFixedList from "./useFixedList";
 
 const InfiniteVertualScroll: React.FC<InfiniteScrollProps> = ({
@@ -27,7 +27,15 @@ const InfiniteVertualScroll: React.FC<InfiniteScrollProps> = ({
     hasMore: fixedHasMore,
     nextPage: fixedNextPage,
     fetchData: fixedFetchData,
+    reset: fixedReset,
   } = useFixedList(chunkSize, listType, list);
+
+  useEffect(() => {
+    if (fixedNextPage === 1 && listType === "FIXED") {
+      fixedFetchData(fixedNextPage);
+    }
+    return;
+  }, [fixedNextPage, listType]);
 
   return (
     <Scroll
@@ -45,7 +53,20 @@ const InfiniteVertualScroll: React.FC<InfiniteScrollProps> = ({
       LoadingList={LoadingList}
       LoadingMore={LoadingMore}
       goToTop={goToTop}
-      refreshList={refreshList}
+      refreshList={{
+        ...refreshList,
+        onRefresh:
+          listType === "FIXED"
+            ? () => {
+                fixedReset();
+                if (refreshList && refreshList.onRefresh) {
+                  refreshList.onRefresh();
+                }
+              }
+            : refreshList && refreshList.onRefresh
+            ? refreshList.onRefresh
+            : () => {},
+      }}
     />
   );
 };

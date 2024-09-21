@@ -44,13 +44,22 @@ function useFixedList(
       ++totalPages;
     }
     totalItems = totalPages * chunkSize;
+    setNextPage(1);
   };
 
   useEffect(() => {
-    if (listType === "FIXED") {
+    if (listType === "FIXED" && DB.length) {
       createChunks();
     }
   }, [DB, listType]);
+
+  const reset = () => {
+    setHasMore(true);
+    setList([]);
+    totalPages = 0;
+    totalItems = 0;
+    setNextPage(1);
+  };
 
   if (listType === "DYNAMIC") {
     // If listType is DYNAMIC, return default values or empty state
@@ -60,6 +69,7 @@ function useFixedList(
       hasMore: false,
       nextPage: 0,
       fetchData: () => {},
+      reset,
     };
   }
 
@@ -69,6 +79,7 @@ function useFixedList(
     hasMore,
     nextPage,
     fetchData,
+    reset,
   };
 }
 

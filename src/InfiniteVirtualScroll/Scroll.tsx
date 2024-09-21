@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import List from "./List";
 import "./index.css";
-import { ScrollProps } from "./InfiniteVertualScroll/types";
+import { ScrollProps } from "./types";
 
 const Scroll: React.FC<ScrollProps> = ({
   totalItems,
