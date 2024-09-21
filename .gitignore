@@ -10,6 +10,11 @@
 
 # production
 /build
+/dist
+/packages/virtual-infinite-scroll/dist
+/packages/test/dist
+/packages/virtual-infinite-scroll/build
+/packages/test/build
 
 # misc
 .DS_Store
