@@ -1,7 +1,7 @@
 {
   "name": "virtual-infinite-scroll",
-  "version": "1.0.4",
-  "description": "A customizable React component for infinite scrolling.",
+  "version": "1.0.5",
+  "description": "A customizable React component for virtual infinite scrolling.",
   "license": "MIT",
   "scripts": {
     "rollup": "rollup -c --bundleConfigAsCjs"
@@ -41,5 +41,10 @@
     "refresh",
     "performance"
   ],
-  "author": "Ashutosh Shukla"
+  "author": "Ashutosh Shukla",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ashutosh7246/true-infinite-scroll.git"
+  },
+  "homepage": "https://github.com/ashutosh7246/true-infinite-scroll#readme"
 }

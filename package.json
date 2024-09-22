@@ -1,14 +1,20 @@
 {
   "name": "my-app",
   "version": "1.0.0",
-  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start-examples": "npm i && npm run rollup --workspace=virtual-infinite-scroll && npm i && npm start --workspace=examples",
+    "build-virtual-infinite-scroll": "npm i && npm run rollup --workspace=virtual-infinite-scroll",
+    "publish-virtual-infinite-scroll": "npm i && npm run rollup --workspace=virtual-infinite-scroll && npm login && npm publish --access public"
   },
   "keywords": [],
-  "author": "",
+  "author": "Ashutosh Shukla",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ashutosh7246/true-infinite-scroll.git"
+  },
+  "homepage": "https://github.com/ashutosh7246/true-infinite-scroll#readme",
   "license": "ISC",
-  "description": "",
+  "description": "An npm workspace containing the 'virtual-infinite-scroll' package and example projects for testing and running 'virtual-infinite-scroll' locally.",
   "workspaces": [
     "packages/examples",
     "packages/virtual-infinite-scroll"

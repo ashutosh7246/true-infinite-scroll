@@ -14,9 +14,9 @@ or
 yarn add virtual-infinite-scroll
 
 // in code ES6
-import InfiniteScroll from 'virtual-infinite-scroll';
+import { VirtualInfiniteScroll } from 'virtual-infinite-scroll';
 // or commonjs
-var InfiniteScroll = require('virtual-infinite-scroll');
+const { VirtualInfiniteScroll } = require('virtual-infinite-scroll');
 ```
 
 ## Features

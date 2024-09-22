@@ -12,9 +12,9 @@
 /build
 /dist
 /packages/virtual-infinite-scroll/dist
-/packages/test/dist
+/packages/examples/dist
 /packages/virtual-infinite-scroll/build
-/packages/test/build
+/packages/examples/build
 
 # misc
 .DS_Store
