@@ -19,9 +19,15 @@ import InfiniteScroll from 'virtual-infinite-scroll';
 var InfiniteScroll = require('virtual-infinite-scroll');
 ```
 
+## Features
+
+- **Virtual Infinite Scroll with Fixed Size Window:** Efficiently render only the visible items in the scrollable area.
+- **Go to Top Button:** Optional button to quickly scroll back to the top of the list.
+- **Refresh Button:** Allows users to refresh or reload the list.
+
 ## Using
 
-```js
+```jsx
 <VirtualInfiniteScroll
   /**
    * listType -->
@@ -46,11 +52,16 @@ var InfiniteScroll = require('virtual-infinite-scroll');
   listGap={
     10
   } /** Gap between list elements in px, must be at least 1 and default is 10 */
-  LoadingListComponent={LoadingListComponent} /** Component to display while loading the list */
-  LoadingMoreComponent={LoadingMoreComponent} /** Component to display while loading more items */
+  LoadingListComponent={
+    LoadingListComponent
+  } /** Component to display while loading the list */
+  LoadingMoreComponent={
+    LoadingMoreComponent
+  } /** Component to display while loading more items */
   goToTopProperties={{
     showGoToTop: true /** Flag to show the Go To Top button */,
-    GoToTopButtonComponent: GoToTopButtonComponent /** Component for Go To Top button */,
+    GoToTopButtonComponent:
+      GoToTopButtonComponent /** Component for Go To Top button */,
     goToTopStyle: {
       boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
       borderRadius: "50%",
@@ -59,7 +70,8 @@ var InfiniteScroll = require('virtual-infinite-scroll');
   refreshListProperties={{
     showRefresh: true /** Flag to show the Refresh button */,
     onRefresh: reset /** Function to be called on refresh button click */,
-    RefreshButtonComponent: RefreshButtonComponent /** Component for Refresh button */,
+    RefreshButtonComponent:
+      RefreshButtonComponent /** Component for Refresh button */,
     refreshButtonStyle: {
       boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
       borderRadius: "5px",
@@ -79,12 +91,6 @@ var InfiniteScroll = require('virtual-infinite-scroll');
   fetchData={fetchData} /** Function to fetch data, accepts a page number */
 />
 ```
-
-## Features
-
-- **Virtual Infinite Scroll with Fixed Size Window:** Efficiently render only the visible items in the scrollable area.
-- **Go to Top Button:** Optional button to quickly scroll back to the top of the list.
-- **Refresh Button:** Allows users to refresh or reload the list.
 
 ## Props
 
@@ -116,7 +122,7 @@ var InfiniteScroll = require('virtual-infinite-scroll');
   The number of items to load in each scroll fetch. Must be at least 10.
 
 - **`list`** (`Array<{ [key: string]: any }>`, required)
-  Array of items to display in the list.
+  Array of items to display in the list. In case of `DYNAMIC` only newly fetched data will be passed into `VirtualInfiniteScroll` component.
 
 - **`Card`** (`React.ComponentType<{ item: any }>`, required)
   Component to render each item in the list.

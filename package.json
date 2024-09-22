@@ -10,7 +10,7 @@
   "license": "ISC",
   "description": "",
   "workspaces": [
-    "packages/test",
+    "packages/examples",
     "packages/virtual-infinite-scroll"
   ]
 }
