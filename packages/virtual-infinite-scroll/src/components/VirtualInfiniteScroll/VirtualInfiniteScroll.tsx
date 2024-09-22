@@ -3,7 +3,7 @@ import { InfiniteScrollProps } from "./types";
 import Scroll from "./Scroll";
 import useFixedList from "./useFixedList";
 
-const InfiniteVertualScroll: React.FC<InfiniteScrollProps> = ({
+const VirtualInfiniteScroll: React.FC<InfiniteScrollProps> = ({
   totalItems,
   list,
   hasMore,
@@ -15,10 +15,10 @@ const InfiniteVertualScroll: React.FC<InfiniteScrollProps> = ({
   height,
   listElementHeight,
   listGap,
-  LoadingList,
-  LoadingMore,
-  goToTop,
-  refreshList,
+  LoadingListComponent,
+  LoadingMoreComponent,
+  goToTopProperties,
+  refreshListProperties,
   listType,
 }) => {
   const {
@@ -50,25 +50,25 @@ const InfiniteVertualScroll: React.FC<InfiniteScrollProps> = ({
       height={height}
       listElementHeight={listElementHeight}
       listGap={listGap}
-      LoadingList={LoadingList}
-      LoadingMore={LoadingMore}
-      goToTop={goToTop}
-      refreshList={{
-        ...refreshList,
+      LoadingListComponent={LoadingListComponent}
+      LoadingMoreComponent={LoadingMoreComponent}
+      goToTopProperties={goToTopProperties}
+      refreshListProperties={{
+        ...refreshListProperties,
         onRefresh:
           listType === "FIXED"
             ? () => {
                 fixedReset();
-                if (refreshList && refreshList.onRefresh) {
-                  refreshList.onRefresh();
+                if (refreshListProperties && refreshListProperties.onRefresh) {
+                  refreshListProperties.onRefresh();
                 }
               }
-            : refreshList && refreshList.onRefresh
-            ? refreshList.onRefresh
+            : refreshListProperties && refreshListProperties.onRefresh
+            ? refreshListProperties.onRefresh
             : () => {},
       }}
     />
   );
 };
 
-export default InfiniteVertualScroll;
+export default VirtualInfiniteScroll;

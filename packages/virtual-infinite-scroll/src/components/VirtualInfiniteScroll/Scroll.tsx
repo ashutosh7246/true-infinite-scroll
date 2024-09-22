@@ -15,14 +15,14 @@ const Scroll: React.FC<ScrollProps> = ({
   height,
   listElementHeight = 200,
   listGap = 10,
-  LoadingList,
-  LoadingMore,
-  goToTop = {},
-  refreshList = {},
+  LoadingListComponent,
+  LoadingMoreComponent,
+  goToTopProperties = {},
+  refreshListProperties = {},
 }) => {
-  const { showGoToTop, GoToTopButton, goToTopStyle } = goToTop;
-  const { showRefresh, onRefresh, RefreshButton, refreshButtonStyle } =
-    refreshList;
+  const { showGoToTop, GoToTopButtonComponent, goToTopStyle } = goToTopProperties;
+  const { showRefresh, onRefresh, RefreshButtonComponent, refreshButtonStyle } =
+    refreshListProperties;
   const currentIndex = useRef<number>(0);
   const startElmObserver = useRef<IntersectionObserver | null>(null);
   const lastElmObserver = useRef<IntersectionObserver | null>(null);
@@ -298,7 +298,7 @@ const Scroll: React.FC<ScrollProps> = ({
       <>
         {renderList() && isBottom() && showGoToTop ? (
           <>
-            {GoToTopButton ? (
+            {GoToTopButtonComponent ? (
               <div
                 onClick={scrollToTop}
                 className="IS-top-custom"
@@ -307,7 +307,7 @@ const Scroll: React.FC<ScrollProps> = ({
                   boxShadow: goToTopStyle?.boxShadow ?? "none",
                 }}
               >
-                <GoToTopButton />
+                <GoToTopButtonComponent />
               </div>
             ) : (
               <div onClick={scrollToTop} className="IS-top">
@@ -339,7 +339,7 @@ const Scroll: React.FC<ScrollProps> = ({
       <>
         {renderList() && showRefresh && currentIndex.current === 0 ? (
           <>
-            {RefreshButton ? (
+            {RefreshButtonComponent ? (
               <div
                 onClick={refreshState}
                 className="IS-refresh-button-custom"
@@ -348,7 +348,7 @@ const Scroll: React.FC<ScrollProps> = ({
                   boxShadow: refreshButtonStyle?.boxShadow ?? "none",
                 }}
               >
-                <RefreshButton />
+                <RefreshButtonComponent />
               </div>
             ) : (
               <div onClick={refreshState} className="IS-refresh-button">
@@ -378,12 +378,12 @@ const Scroll: React.FC<ScrollProps> = ({
           Card={Card}
           listElementHeight={listElementHeight}
           listGap={listGap}
-          LoadingList={LoadingList}
-          LoadingMore={LoadingMore}
+          LoadingListComponent={LoadingListComponent}
+          LoadingMoreComponent={LoadingMoreComponent}
         />
       ) : (
         <div className="IS-loading IS-h-100">
-          {LoadingList ? <LoadingList /> : <div>Loading...</div>}
+          {LoadingListComponent ? <LoadingListComponent /> : <div>Loading...</div>}
         </div>
       )}
     </div>

@@ -111,24 +111,24 @@ export default function App() {
           height={convertVhToPx(100)}
           listElementHeight={250}
           listGap={10}
-          LoadingList={LoadingList}
-          LoadingMore={LoadingMore}
-          goToTop={{
+          LoadingListComponent={LoadingListComponent}
+          LoadingMoreComponent={LoadingMoreComponent}
+          goToTopProperties={{
             showGoToTop: true,
-            GoToTopButton: GoToTopButton,
+            GoToTopButtonComponent: GoToTopButtonComponent,
             goToTopStyle: {
               boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
               borderRadius: "50%",
             },
           }}
-          refreshList={{
+          refreshListProperties={{
             onRefresh: reset,
             showRefresh: true,
             refreshButtonStyle: {
               boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
               borderRadius: "5px",
             },
-            RefreshButton: RefreshButton,
+            RefreshButtonComponent: RefreshButtonComponent,
           }}
           listType="DYNAMIC"
         />
@@ -141,22 +141,22 @@ export default function App() {
           height={convertVhToPx(100)}
           listElementHeight={250}
           listGap={10}
-          goToTop={{
+          goToTopProperties={{
             showGoToTop: true,
-            GoToTopButton: GoToTopButton,
+            GoToTopButtonComponent: GoToTopButtonComponent,
             goToTopStyle: {
               boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
               borderRadius: "50%",
             },
           }}
-          refreshList={{
+          refreshListProperties={{
             onRefresh: refreshFixedList,
             showRefresh: true,
             refreshButtonStyle: {
               boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
               borderRadius: "5px",
             },
-            RefreshButton: RefreshButton,
+            RefreshButtonComponent: RefreshButtonComponent,
           }}
           listType="FIXED"
         />
@@ -165,7 +165,7 @@ export default function App() {
   );
 }
 
-const RefreshButton = () => {
+const RefreshButtonComponent = () => {
   return (
     <div
       style={{
@@ -182,7 +182,7 @@ const RefreshButton = () => {
   );
 };
 
-const GoToTopButton = () => {
+const GoToTopButtonComponent = () => {
   return (
     <div
       style={{
@@ -200,10 +200,10 @@ const GoToTopButton = () => {
   );
 };
 
-const LoadingList = () => {
+const LoadingListComponent = () => {
   return <div style={{ padding: 10 }}>Loading...</div>;
 };
 
-const LoadingMore = () => {
+const LoadingMoreComponent = () => {
   return <div style={{ padding: 10 }}>Loading More...</div>;
 };

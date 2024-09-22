@@ -5,39 +5,42 @@ interface CommonButtonStyle {
   boxShadow?: string;
 }
 
-interface GoToTop {
+interface GoToTopProps {
   /** Flag to show the Go To Top button */
   showGoToTop?: boolean;
   /** Component for Go To Top button */
-  GoToTopButton?: React.ComponentType;
+  GoToTopButtonComponent?: React.ComponentType;
   /** Style properties for the Go to Top button */
   goToTopStyle?: CommonButtonStyle;
 }
 
-interface RefreshButton {
+interface RefreshButtonProps {
   /** Component for Refresh button */
-  RefreshButton?: React.ComponentType;
-  /** Style properties for the Go to Top button */
+  RefreshButtonComponent?: React.ComponentType;
+  /** Style properties for the Refresh button */
   refreshButtonStyle?: CommonButtonStyle;
 }
 
-interface RefreshPresent extends RefreshButton {
+interface RefreshPresent extends RefreshButtonProps {
   /** Flag to show the Refresh button */
   showRefresh?: true;
-  /** Function to reset data */
+  /** Function to be called on refresh button click */
   onRefresh: () => void;
 }
 
-interface RefreshNotPresent extends RefreshButton {
+interface RefreshNotPresent extends RefreshButtonProps {
   /** Flag to show the Refresh button */
   showRefresh?: false;
-  /** Function to reset data */
+  /** Function to be called on refresh button click */
   onRefresh?: () => void;
 }
 
 type ListRefreshProps = RefreshPresent | RefreshNotPresent;
 
 interface FixedProps {
+  /**
+   * Renders a static list of items based on a fixed dataset.
+   */
   listType: "FIXED";
   /** Total number of items available, must be at least 1 */
   totalItems?: number; // totalItems >= 1
@@ -52,6 +55,10 @@ interface FixedProps {
 }
 
 interface DynamicProps {
+  /**
+   * Renders a list of items based on dynamic data, typically fetched from an API.
+   * The list updates as new data becomes available, allowing for real-time or asynchronous data rendering.
+   */
   listType: "DYNAMIC";
   /** Total number of items available, must be at least 1 */
   totalItems: number; // totalItems >= 1
@@ -67,24 +74,24 @@ interface DynamicProps {
 
 interface BaseProps {
   /** Properties to show the Go To Top button */
-  goToTop?: GoToTop;
+  goToTopProperties?: GoToTopProps;
   /** Properties to show the Refresh button */
-  refreshList?: ListRefreshProps;
-  /** Height of each list element, must be at least 10 */
+  refreshListProperties?: ListRefreshProps;
+  /** Height of each list element in px, must be at least 10 */
   listElementHeight?: number; // listElementHeight >= 10
-  /** Gap between list elements, must be at least 1 */
+  /** Gap between list elements in px, must be at least 1 */
   listGap?: number; // listGap >= 1
-  /** Number of items to load per fetch, must be at least 10 */
+  /** Number of items to load per scroll, must be at least 10 */
   chunkSize: number; // chunkSize >= 10
   /** Card component, rendering individual items */
   Card: React.ComponentType<{ item: any }>;
-  /** The height of the container, must be at least 200 */
+  /** The height of the container  in px, must be at least 200 */
   height: number; // height >= 200
   /** Component to display while loading the list */
-  LoadingList?: React.ComponentType;
+  LoadingListComponent?: React.ComponentType;
   /** Component to display while loading more items */
-  LoadingMore?: React.ComponentType;
-  /** Array of objects representing the list, must have size <= totalItems */
+  LoadingMoreComponent?: React.ComponentType;
+  /** Array of objects representing the list, must have size <= totalItems when using dynamic list */
   list: Array<{ [key: string]: any }>; // listSize <= totalItems
 }
 
