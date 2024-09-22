@@ -2,6 +2,8 @@
 
 # dependencies
 /node_modules
+/packages/examples/node_modules
+/packages/virtual-infinite-scroll/node_modules
 /.pnp
 .pnp.js
 
