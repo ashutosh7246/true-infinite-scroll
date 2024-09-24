@@ -1,6 +1,12 @@
 # Virtual Infinite Scroll
 
-`virtual-infinite-scroll` is a highly customizable React component for infinite scrolling, with the ability to handle dynamic or fixed data sets. It supports features like a **Go to Top** button, **Refresh** functionality, and more. With virtual rendering, it ensures optimal performance even with large datasets.
+`virtual-infinite-scroll` is a highly customizable React component designed to provide efficient infinite scrolling, even with large datasets. It supports both dynamic and static data sets within a fixed window size, ensuring smooth performance.
+
+## Features
+
+- **Virtual Infinite Scroll with Fixed Size Window:** Efficiently render only the visible items in the scrollable area.
+- **Go to Top Button:** Optional button to quickly scroll back to the top of the list.
+- **Refresh Button:** Allows users to refresh or reload the list.
 
 ## Installation
 
@@ -18,12 +24,6 @@ import { VirtualInfiniteScroll } from 'virtual-infinite-scroll';
 // or commonjs
 const { VirtualInfiniteScroll } = require('virtual-infinite-scroll');
 ```
-
-## Features
-
-- **Virtual Infinite Scroll with Fixed Size Window:** Efficiently render only the visible items in the scrollable area.
-- **Go to Top Button:** Optional button to quickly scroll back to the top of the list.
-- **Refresh Button:** Allows users to refresh or reload the list.
 
 ## Using
 
@@ -176,6 +176,13 @@ Common styling options for both the Go to Top and Refresh buttons.
 
 - **`boxShadow`** (`string`)
   Box shadow of the button.
+
+## Examples
+
+- infinite scroll example using react (with fixed data set)
+  - [![Edit yk7637p62z](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/p/sandbox/76y4ss)
+- infinte scroll example using react (with dynamic data set)
+  - [![Edit 439v8rmqm0](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/p/sandbox/wqjzdt)
 
 ## License
 
