@@ -1,9 +1,37 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { InfiniteScrollProps } from "./types";
 import Scroll from "./Scroll";
 import useFixedList from "./useFixedList";
 
-const VirtualInfiniteScroll: React.FC<InfiniteScrollProps> = ({
+const VirtualInfiniteScroll: React.FC<InfiniteScrollProps> = (props) => {
+  const { listType, list, nextPage, chunkSize, totalItems } = props;
+
+  const [listKey, setKey] = useState(0);
+
+  useEffect(() => {
+    if (listType === "FIXED") {
+      setKey((val) => val + 1);
+    }
+  }, [list, listType]);
+
+  if (
+    listType === "DYNAMIC" &&
+    (nextPage < 2 ||
+      list.length !== chunkSize * (nextPage - 1) ||
+      totalItems < chunkSize * (nextPage - 1))
+  ) {
+    return null;
+  }
+
+  return (
+    <Proxy
+      key={listKey} // Use the reference counter to force re-render in case of FIXED list
+      {...props}
+    />
+  );
+};
+
+const Proxy: React.FC<InfiniteScrollProps> = ({
   totalItems,
   list,
   hasMore,
@@ -20,6 +48,8 @@ const VirtualInfiniteScroll: React.FC<InfiniteScrollProps> = ({
   goToTopProperties,
   refreshListProperties,
   listType,
+  cardUniqueField,
+  onListItemClick,
 }) => {
   const {
     totalItems: fixedTotalItems,
@@ -67,6 +97,8 @@ const VirtualInfiniteScroll: React.FC<InfiniteScrollProps> = ({
             ? refreshListProperties.onRefresh
             : () => {},
       }}
+      cardUniqueField={cardUniqueField}
+      onListItemClick={onListItemClick}
     />
   );
 };

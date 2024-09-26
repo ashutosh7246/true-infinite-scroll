@@ -1,6 +1,6 @@
 {
   "name": "virtual-infinite-scroll",
-  "version": "1.0.6",
+  "version": "1.0.9",
   "description": "A customizable React component for virtual infinite scrolling.",
   "license": "MIT",
   "scripts": {

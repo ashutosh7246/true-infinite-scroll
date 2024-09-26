@@ -93,6 +93,10 @@ interface BaseProps {
   LoadingMoreComponent?: React.ComponentType;
   /** Array of objects representing the list, must have size <= totalItems when using dynamic list */
   list: Array<{ [key: string]: any }>; // listSize <= totalItems
+  /** Unique field which will be used as key for each list item card */
+  cardUniqueField: string; // should be unique for each card
+  /** Function triggered on list item click */
+  onListItemClick?: (data?: { [key: string]: any }) => void;
 }
 
 type ListProps = FixedProps | DynamicProps;

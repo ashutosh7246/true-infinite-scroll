@@ -17,10 +17,13 @@ const Scroll: React.FC<ScrollProps> = ({
   listGap = 10,
   LoadingListComponent,
   LoadingMoreComponent,
+  cardUniqueField,
+  onListItemClick,
   goToTopProperties = {},
   refreshListProperties = {},
 }) => {
-  const { showGoToTop, GoToTopButtonComponent, goToTopStyle } = goToTopProperties;
+  const { showGoToTop, GoToTopButtonComponent, goToTopStyle } =
+    goToTopProperties;
   const { showRefresh, onRefresh, RefreshButtonComponent, refreshButtonStyle } =
     refreshListProperties;
   const currentIndex = useRef<number>(0);
@@ -380,10 +383,16 @@ const Scroll: React.FC<ScrollProps> = ({
           listGap={listGap}
           LoadingListComponent={LoadingListComponent}
           LoadingMoreComponent={LoadingMoreComponent}
+          cardUniqueField={cardUniqueField}
+          onListItemClick={onListItemClick}
         />
       ) : (
         <div className="IS-loading IS-h-100">
-          {LoadingListComponent ? <LoadingListComponent /> : <div>Loading...</div>}
+          {LoadingListComponent ? (
+            <LoadingListComponent />
+          ) : (
+            <div>Loading...</div>
+          )}
         </div>
       )}
     </div>
