@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import Card from "./card/Card";
 import useProducts from "../hooks/useProducts";
-// import { VirtualInfiniteScroll } from "./src";
 import { VirtualInfiniteScroll } from "virtual-infinite-scroll";
 
 interface DataObject {
@@ -94,6 +93,19 @@ export default function App() {
     );
   };
 
+  const onListItemClick = (data: any) => {
+    const DBData2: DataObject[] = [];
+    for (let i = 0; i < 50; i++) {
+      DBData2.push({
+        id: `${i}-2`,
+        catCounter: i,
+        title: `Card ${i + 1}`,
+      });
+    }
+    setFixedList(DBData2);
+    console.log(data);
+  };
+
   return (
     <div style={{ paddingLeft: 10, paddingRight: 10 }}>
       {renderHeader()}
@@ -130,7 +142,9 @@ export default function App() {
             },
             RefreshButtonComponent: RefreshButtonComponent,
           }}
-          listType="DYNAMIC"
+          listType={listType}
+          cardUniqueField="id"
+          onListItemClick={onListItemClick}
         />
       ) : (
         <VirtualInfiniteScroll
@@ -158,7 +172,9 @@ export default function App() {
             },
             RefreshButtonComponent: RefreshButtonComponent,
           }}
-          listType="FIXED"
+          listType={listType}
+          cardUniqueField="id"
+          onListItemClick={onListItemClick}
         />
       )}
     </div>

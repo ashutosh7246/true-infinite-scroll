@@ -38,9 +38,7 @@ const { VirtualInfiniteScroll } = require('virtual-infinite-scroll');
   list={
     list
   } /** Array of objects representing the list, must have size <= totalItems when using dynamic list */
-  height={convertVhToPx(
-    100
-  )} /** The height of the container in px, must be at least 200 */
+  height={100} /** The height of the container in px, must be at least 200 */
   chunkSize={
     chunkSize
   } /** Number of items to load per scroll, must be at least 10 */
@@ -89,6 +87,12 @@ const { VirtualInfiniteScroll } = require('virtual-infinite-scroll');
   loading={loading} /** Indicator if data is being loaded */
   nextPage={nextPage} /** The next page number to be fetched */
   fetchData={fetchData} /** Function to fetch data, accepts a page number */
+  cardUniqueField={
+    id
+  } /** Unique field which will be used as key for each list item card. */
+  onListItemClick={(data) => {
+    console.log(data);
+  }} /** Function triggered on list item click. */
 />
 ```
 
@@ -122,7 +126,7 @@ const { VirtualInfiniteScroll } = require('virtual-infinite-scroll');
   The number of items to load in each scroll fetch. Must be at least 10.
 
 - **`list`** (`Array<{ [key: string]: any }>`, required)
-  Array of items to display in the list. In case of `DYNAMIC` only newly fetched data will be passed into `VirtualInfiniteScroll` component.
+  Array of items to display in the list. In case of `DYNAMIC`, newly fetched data along with existing data will be passed into `VirtualInfiniteScroll` component.
 
 - **`Card`** (`React.ComponentType<{ item: any }>`, required)
   Component to render each item in the list.
@@ -141,6 +145,12 @@ const { VirtualInfiniteScroll } = require('virtual-infinite-scroll');
 
 - **`LoadingMoreComponent`** (`React.ComponentType`)
   Component to display when fetching more items.
+
+- **`cardUniqueField`** (`string`)
+  Unique field which will be used as key for each list item card.
+
+- **`onListItemClick`** (`(data: any) => void`)
+  Function triggered on list item click.
 
 #### Go to Top Button Properties (`goToTopProperties`)
 

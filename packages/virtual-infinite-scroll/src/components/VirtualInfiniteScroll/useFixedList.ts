@@ -8,7 +8,7 @@ interface ChunkedData {
   [key: number]: DataObject[]; // Key as number, value as an object
 }
 
-const ChunkedData: ChunkedData = {}; // Object with number keys and object values
+var ChunkedData: ChunkedData = {}; // Object with number keys and object values
 
 var totalPages = 0;
 var totalItems = 0;
@@ -37,6 +37,7 @@ function useFixedList(
 
   const createChunks = () => {
     let pg = 1;
+    ChunkedData = {};
     for (let i = 0; i < DB.length; i += chunkSize) {
       const chunk = DB.slice(i, i + chunkSize);
       ChunkedData[pg] = chunk;
